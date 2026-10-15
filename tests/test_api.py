@@ -62,7 +62,7 @@ def test_patch_task_validation(client, user):
     assert client.patch("/tasks/999", json={"done": True}).status_code == 404
 
 
-def test_delete_user_removes_tasks(client, app, user):
+def test_delete_user_is_soft_and_keeps_tasks(client, app, user):
     other = client.post("/users", json={"email": "b@example.com", "name": "B"}).get_json()
     client.post(f"/users/{user['id']}/tasks", json={"title": "one"})
     client.post(f"/users/{user['id']}/tasks", json={"title": "two"})
@@ -70,11 +70,19 @@ def test_delete_user_removes_tasks(client, app, user):
 
     assert client.delete(f"/users/{user['id']}").status_code == 204
     assert client.get(f"/users/{user['id']}").status_code == 404
+    assert [u["id"] for u in client.get("/users").get_json()] == [other["id"]]
+    assert client.get(f"/users/{user['id']}/tasks").status_code == 404
+    assert client.post(f"/users/{user['id']}/tasks", json={"title": "x"}).status_code == 404
+    assert client.delete(f"/users/{user['id']}").status_code == 404
 
     conn = connect(app.config["DATABASE"])
-    remaining = [r["title"] for r in conn.execute("SELECT title FROM tasks")]
+    titles = sorted(r["title"] for r in conn.execute("SELECT title FROM tasks"))
+    deleted_at = conn.execute(
+        "SELECT deleted_at FROM users WHERE id = ?", (user["id"],)
+    ).fetchone()[0]
     conn.close()
-    assert remaining == ["keep"]
+    assert titles == ["keep", "one", "two"]
+    assert deleted_at
 
 
 def test_delete_missing_user_404(client):
@@ -83,8 +91,8 @@ def test_delete_missing_user_404(client):
 
 def test_migrations_are_recorded_and_idempotent(tmp_path):
     conn = connect(tmp_path / "m.db")
-    assert apply_migrations(conn) == ["001_init.sql"]
+    assert apply_migrations(conn) == ["001_init.sql", "002_users_soft_delete.sql"]
     assert apply_migrations(conn) == []
     names = [r["name"] for r in conn.execute("SELECT name FROM schema_migrations")]
     conn.close()
-    assert names == ["001_init.sql"]
+    assert names == ["001_init.sql", "002_users_soft_delete.sql"]
