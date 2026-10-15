@@ -22,7 +22,7 @@ All requests need an `X-API-Key` header matching `TASKLITE_API_KEY`.
 | GET    | `/users`            | List users                           |
 | POST   | `/users`            | Create user (`email`, `name`)        |
 | GET    | `/users/<id>`       | Get a user                           |
-| DELETE | `/users/<id>`       | Delete a user and all their tasks    |
+| DELETE | `/users/<id>`       | Soft-delete a user (tasks kept)      |
 | GET    | `/users/<id>/tasks` | List a user's tasks                  |
 | POST   | `/users/<id>/tasks` | Create task (`title`)                |
 | PATCH  | `/tasks/<id>`       | Update `title` and/or `done`         |

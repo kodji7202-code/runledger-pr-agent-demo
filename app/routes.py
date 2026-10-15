@@ -55,7 +55,7 @@ def task_json(row):
 
 @bp.get("/users")
 def list_users():
-    rows = get_db().execute("SELECT * FROM users ORDER BY id").fetchall()
+    rows = get_db().execute("SELECT * FROM users WHERE deleted_at IS NULL ORDER BY id").fetchall()
     return jsonify([dict(r) for r in rows])
 
 
@@ -76,23 +76,25 @@ def create_user():
 
 @bp.get("/users/<int:user_id>")
 def get_user(user_id):
-    row = fetch_or_404("SELECT * FROM users WHERE id = ?", (user_id,), "user")
+    row = fetch_or_404("SELECT * FROM users WHERE id = ? AND deleted_at IS NULL", (user_id,), "user")
     return jsonify(dict(row))
 
 
 @bp.delete("/users/<int:user_id>")
 def delete_user(user_id):
-    fetch_or_404("SELECT id FROM users WHERE id = ?", (user_id,), "user")
+    fetch_or_404("SELECT id FROM users WHERE id = ? AND deleted_at IS NULL", (user_id,), "user")
     db = get_db()
-    with db:  # one transaction: tasks and user go together
-        db.execute("DELETE FROM tasks WHERE user_id = ?", (user_id,))
-        db.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    with db:
+        db.execute(
+            "UPDATE users SET deleted_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now') WHERE id = ?",
+            (user_id,),
+        )
     return "", 204
 
 
 @bp.get("/users/<int:user_id>/tasks")
 def list_tasks(user_id):
-    fetch_or_404("SELECT id FROM users WHERE id = ?", (user_id,), "user")
+    fetch_or_404("SELECT id FROM users WHERE id = ? AND deleted_at IS NULL", (user_id,), "user")
     rows = get_db().execute(
         "SELECT * FROM tasks WHERE user_id = ? ORDER BY id", (user_id,)
     ).fetchall()
@@ -101,7 +103,7 @@ def list_tasks(user_id):
 
 @bp.post("/users/<int:user_id>/tasks")
 def create_task(user_id):
-    fetch_or_404("SELECT id FROM users WHERE id = ?", (user_id,), "user")
+    fetch_or_404("SELECT id FROM users WHERE id = ? AND deleted_at IS NULL", (user_id,), "user")
     title = require_string(get_json_object(), "title")
     db = get_db()
     cur = db.execute("INSERT INTO tasks (user_id, title) VALUES (?, ?)", (user_id, title))
