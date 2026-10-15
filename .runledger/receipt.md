@@ -14,6 +14,7 @@ Asked to: “We need soft delete for users instead of hard delete. - DELETE /use
 | Test runs | 1 | +10 | 1 test command(s) ran in the session. |
 | Last test run | pass | +15 | The last test run passed (12 passed, 0 failed). |
 | Tests deleted, skipped or weakened | 0 | 0 | No test file was deleted, skipped or weakened. |
+| Tests replaced or changed | 1 | 0 | tests/test_api.py: test_delete_user_removes_tasks replaced by test_delete_user_is_soft_and_keeps_tasks (3 assertions removed, 8 added). |
 | Steps with errors | 0% | +5 | 0 of 5 steps returned an error. |
 | Repeated commands and edits | 0 | 0 | No command repeated 3+ times and no file was edited 5+ times. |
 | Changes unrelated to the request | 2 | 0 | 2 of 4 changed files share no word with the request. |
@@ -21,7 +22,7 @@ Asked to: “We need soft delete for users instead of hard delete. - DELETE /use
 | Rule-based risk | Medium | -8 | Rule-based risk 35/100 (Medium). |
 
 ## Why it was flagged
-- **MEDIUM** · step 3: Wrote a database migration (migrations/002_users_soft_delete.sql)
+- **MEDIUM** · step 3: Added a database migration (migrations/002_users_soft_delete.sql)
 - **LOW** · step 5: Copied a project file outside the project (tasklite.db → /tmp/tasklite.db.bak-pre-002)
 - **MEDIUM** · step 5: Ran a database migration command (python3 scripts/migrate.py)
 
@@ -29,10 +30,10 @@ Asked to: “We need soft delete for users instead of hard delete. - DELETE /use
 No material savings were found for this run.
 
 ## Files changed
-- `migrations/002_users_soft_delete.sql` +1 −0
-- `app/routes.py` +0 −0
-- `tests/test_api.py` +0 −0
-- `README.md` +0 −0
+- `migrations/002_users_soft_delete.sql` (new) +1 −0
+- `app/routes.py` +10 −8
+- `tests/test_api.py` +13 −5
+- `README.md` +1 −1
 
 ## Steps
 1. Ran `cd . && git status --short && find app…` — Sonnet 5.5, n/a tok, n/a

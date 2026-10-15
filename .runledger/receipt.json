@@ -9,6 +9,7 @@
   "cwd": "repo",
   "cwd_source": "header",
   "git_branch": "demo/b-with-receipt",
+  "git_base": "b4712c7",
   "started": "2026-10-15T17:15:59.122Z",
   "ended": "2026-10-15T17:16:26.045Z",
   "duration_seconds": 26.923,
@@ -23,7 +24,7 @@
       {
         "severity": "medium",
         "code": "db_migration",
-        "reason": "Wrote a database migration (migrations/002_users_soft_delete.sql)",
+        "reason": "Added a database migration (migrations/002_users_soft_delete.sql)",
         "step": 3
       },
       {
@@ -61,40 +62,40 @@
       "path": "migrations/002_users_soft_delete.sql",
       "added": 1,
       "removed": 0,
-      "created": false,
+      "created": true,
       "deleted": false,
       "shell": true,
-      "verified": false,
+      "verified": true,
       "binary": false
     },
     {
       "path": "app/routes.py",
-      "added": 0,
-      "removed": 0,
+      "added": 10,
+      "removed": 8,
       "created": false,
       "deleted": false,
       "shell": true,
-      "verified": false,
+      "verified": true,
       "binary": false
     },
     {
       "path": "tests/test_api.py",
-      "added": 0,
-      "removed": 0,
+      "added": 13,
+      "removed": 5,
       "created": false,
       "deleted": false,
       "shell": true,
-      "verified": false,
+      "verified": true,
       "binary": false
     },
     {
       "path": "README.md",
-      "added": 0,
-      "removed": 0,
+      "added": 1,
+      "removed": 1,
       "created": false,
       "deleted": false,
       "shell": true,
-      "verified": false,
+      "verified": true,
       "binary": false
     }
   ],
@@ -137,7 +138,7 @@
         {
           "severity": "medium",
           "code": "db_migration",
-          "reason": "Wrote a database migration (migrations/002_users_soft_delete.sql)",
+          "reason": "Added a database migration (migrations/002_users_soft_delete.sql)",
           "step": 3
         }
       ]
@@ -201,6 +202,12 @@
         "value": 0,
         "impact": 0,
         "note": "No test file was deleted, skipped or weakened."
+      },
+      {
+        "name": "test_changes",
+        "value": 1,
+        "impact": 0,
+        "note": "tests/test_api.py: test_delete_user_removes_tasks replaced by test_delete_user_is_soft_and_keeps_tasks (3 assertions removed, 8 added)."
       },
       {
         "name": "error_rate",
